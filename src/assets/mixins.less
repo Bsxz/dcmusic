@@ -1,0 +1,33 @@
+:root {
+  --el-color-primary: #84a729 !important;
+  --el-border-color-light: transparent !important;
+  --el-main-padding: 40px;
+}
+
+@width: 200px;
+// 鼠标经过盒子颜色
+@hover: red;
+// 鼠标点击颜色
+@active: #84a729;
+
+.active {
+  color: #fff !important;
+  background-color: @active;
+}
+.icon {
+  width: 1em;
+  height: 1em;
+  font-size: 30px;
+  vertical-align: -0.15em;
+  fill: currentColor;
+  overflow: hidden;
+}
+:deep(.el-tabs__header) {
+  margin: 0 0 30px 0;
+
+  :deep(.el-tabs__item):focus-visible {
+    box-shadow: none;
+    border: none;
+    outline: none;
+  }
+}
