@@ -1,6 +1,7 @@
 <script setup>
 import { useRoute } from "vue-router";
-
+import { useStore } from "vuex";
+const store = useStore();
 const route = useRoute();
 
 // 添加新歌单
@@ -46,17 +47,16 @@ function addSongList() {
               </el-icon>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="1-5">歌单1</el-menu-item>
-              <el-menu-item index="1-6">歌单2</el-menu-item>
-              <el-menu-item index="1-7">歌单3</el-menu-item>
-              <el-menu-item index="1-7">歌单3</el-menu-item>
-              <el-menu-item index="1-7">歌单3</el-menu-item>
-              <el-menu-item index="1-7">歌单3</el-menu-item>
-              <el-menu-item index="1-7">歌单3</el-menu-item>
-              <el-menu-item index="1-7">歌单3</el-menu-item>
+              <el-menu-item
+                v-for="item in store.state.user.subcount.create"
+                index="/songlistdetails"
+                :route="{ path: '/songlistdetails', query: { id: item.id } }"
+                :key="item.id"
+                >{{ item.name }}</el-menu-item
+              >
             </el-menu-item-group>
           </el-sub-menu>
-          <el-sub-menu index="2">
+          <el-sub-menu index="2" class="collector">
             <template #title>
               <span>收藏的歌单</span>
               <el-icon class="plus">
@@ -64,9 +64,13 @@ function addSongList() {
               </el-icon>
             </template>
             <el-menu-item-group>
-              <el-menu-item index="1-8">歌单1</el-menu-item>
-              <el-menu-item index="1-9">歌单2</el-menu-item>
-              <el-menu-item index="2-1">歌单3</el-menu-item>
+              <el-menu-item
+                v-for="item in store.state.user.subcount.collector"
+                index="/songlistdetails"
+                :route="{ path: '/songlistdetails', query: { id: item.id } }"
+                :key="item.id"
+                >{{ item.name }}</el-menu-item
+              >
             </el-menu-item-group>
           </el-sub-menu>
         </el-menu>
@@ -101,6 +105,7 @@ function addSongList() {
           border-radius: 5px;
           width: 160px;
           margin: 0 auto;
+
           cursor: default;
           margin-bottom: 8px;
 
@@ -168,6 +173,14 @@ function addSongList() {
             }
           }
         }
+      }
+    }
+  }
+  :deep(.collector) {
+    .el-menu-item-group {
+      .el-menu-item {
+        overflow: hidden;
+        text-overflow: ellipsis;
       }
     }
   }

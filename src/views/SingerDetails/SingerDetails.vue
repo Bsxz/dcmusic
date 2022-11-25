@@ -30,13 +30,13 @@ onMounted(() => {
         <el-skeleton-item variant="image" />
       </template>
       <template #default v-if="artistdetail">
-        <el-card :body-style="{ width: '180px' }">
+        <el-card :body-style="{ width: '180px' }" v-if="artistdetail.artist">
           <img :src="artistdetail.artist.cover" class="image" />
         </el-card>
       </template>
     </el-skeleton>
     <div class="hright">
-      <h2>{{ artistdetail.artist.name }}</h2>
+      <h2 v-if="artistdetail.artist">{{ artistdetail.artist.name }}</h2>
     </div>
   </div>
   <el-tabs v-model="activeName">

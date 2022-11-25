@@ -1,5 +1,5 @@
 <script setup>
-import { computed, onBeforeMount, reactive, ref } from "vue";
+import { computed, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import Login from "@/components/Login/Login.vue";
 import { useStore } from "vuex";
@@ -20,17 +20,20 @@ function back() {
 function forward() {
   router.go(1);
 }
-
+async function search() {
+  router.push({ path: "/search", query: { keywords: data.input } });
+}
 function showinfosuffix() {
   data.placeholder = "";
-  data.prefix = !data.prefix;
-  data.suffix = !data.suffix;
+  data.prefix = false;
+  data.suffix = true;
 }
 
 function showinfoprefix() {
   data.placeholder = "搜索音乐";
-  data.prefix = !data.prefix;
-  data.suffix = !data.suffix;
+  if (data.input) return;
+  data.prefix = true;
+  data.suffix = false;
 }
 function login() {
   if (!profile.value) {
@@ -67,6 +70,7 @@ const profile = computed(() => {
           :prefix-icon="data.prefix ? 'Search' : ''"
           @focus="showinfosuffix()"
           @blur="showinfoprefix()"
+          @keydown.enter="search"
           :placeholder="data.placeholder"
           :suffix-icon="data.suffix ? 'Search' : ''"
         />
@@ -116,6 +120,9 @@ const profile = computed(() => {
       .el-input__inner {
         height: 30px;
         line-height: 30px;
+      }
+      .el-input__suffix:hover {
+        cursor: pointer;
       }
     }
   }

@@ -8,7 +8,6 @@ export {}
 declare module '@vue/runtime-core' {
   export interface GlobalComponents {
     Aside: typeof import('./src/components/Aside/Aside.vue')['default']
-    Billboard: typeof import('./src/components/Billboard/Billboard.vue')['default']
     Core: typeof import('./src/components/Core/Core.vue')['default']
     ElAside: typeof import('element-plus/es')['ElAside']
     ElAvatar: typeof import('element-plus/es')['ElAvatar']
@@ -43,12 +42,13 @@ declare module '@vue/runtime-core' {
     ElTabs: typeof import('element-plus/es')['ElTabs']
     Header: typeof import('./src/components/Header/Header.vue')['default']
     Login: typeof import('./src/components/Login/Login.vue')['default']
+    LyricsPage: typeof import('./src/components/LyricsPage/LyricsPage.vue')['default']
     Play: typeof import('./src/components/Play/Play.vue')['default']
     Playlist: typeof import('./src/components/Playlist/Playlist.vue')['default']
-    RankList: typeof import('./src/components/RankList/RankList.vue')['default']
     ReferralList: typeof import('./src/components/ReferralList/ReferralList.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SingerLists: typeof import('./src/components/SingerLists/SingerLists.vue')['default']
+    Songs: typeof import('./src/components/Songs/Songs.vue')['default']
   }
 }

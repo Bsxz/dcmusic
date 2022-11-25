@@ -3,15 +3,11 @@ import { ajax } from "./request.js";
 // 用户登入
 /* 手机号密码登录 */
 export const reqLogin = ({ phone, md5_password }) =>
-  ajax(
-    "/login/cellphone",
-    {
-      phone,
-      md5_password,
-      timestamp: Date.now(),
-    },
-    "post"
-  );
+  ajax("/login/cellphone", {
+    phone,
+    md5_password,
+    timestamp: Date.now(),
+  });
 
 /* 退出登录 */
 export const logingout = () => ajax("/logout");

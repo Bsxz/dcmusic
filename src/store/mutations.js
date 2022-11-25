@@ -21,6 +21,8 @@ import {
   RECEIVE_USERACCOUNT,
   RECEIVE_USERDETAIL,
   RECEIVE_USERSUBCOUNT,
+  RECEIVE_USERLIKELIST,
+  RECEIVE_SEARCHLIST,
 } from "./mutations-type";
 
 export default {
@@ -44,6 +46,9 @@ export default {
   [RECEIVE_USERACCOUNT](state, { accountinfo }) {
     state.user.profile = accountinfo.profile;
     state.user.account = accountinfo.account;
+  },
+  [RECEIVE_USERLIKELIST](state, { likelist }) {
+    state.user.likelist = likelist;
   },
   [RECEIVE_USERSUBCOUNT](state, { subcount }) {
     const userId = state.user.profile.userId;
@@ -121,7 +126,13 @@ export default {
   [RECEIVE_TOPLIST](state, { toplist }) {
     state.toplisttags = toplist;
   },
-  [RECEIVE_PLAYQUEUE](state, item) {
-    state.playqueue.push(item);
+  [RECEIVE_PLAYQUEUE](state, songlists) {
+    songlists.forEach((item) => {
+      state.playqueue.push(item);
+    });
+  },
+  [RECEIVE_SEARCHLIST](state, { songs }) {
+    state.searchsongs = songs;
+    console.log(state.searchsongs);
   },
 };

@@ -1,41 +1,48 @@
 <script setup>
-import { computed, reactive, ref } from "vue";
+import { reactive, ref, watch } from "vue";
 import { useRouter, useRoute } from "vue-router";
 import { store } from "../../store";
+import { reqMusicUrl } from "@/Api/api_music.js";
+import LyricsPage from "@/components/LyricsPage/LyricsPage.vue";
 const router = useRouter();
 const route = useRoute();
 const controls = reactive({
+  songName: "",
+  singName: "",
+  currentIndex: 0,
+  id: "",
+  picUrl: "",
+  musicUrl: "",
   play: false,
+  volume: 50,
+  progress: 0,
+  start: 0,
+  end: 0,
 });
-const value = ref(50);
+const audio = ref(null);
+const picUrl = ref(null);
 const isinfo = ref(false);
 const likes = ref(false);
 const playlistinfo = ref(false);
-const playqueue = computed(() => {
-  return store.state.playqueue;
-});
-let timer = null;
-function isplay() {
-  controls.play = !controls.play;
-}
+const LyricsPageinfo = ref(false);
+let timer1 = null;
+
 function islikes() {
   likes.value = !likes.value;
 }
-
 function mouseenter() {
-  if (timer != null) {
-    clearTimeout(timer);
-    timer = null;
+  if (timer1 != null) {
+    clearTimeout(timer1);
+    timer1 = null;
     isinfo.value = true;
   }
   isinfo.value = true;
 }
-
 function mouseleave() {
-  if (timer === null)
-    timer = setTimeout(() => {
+  if (timer1 === null)
+    timer1 = setTimeout(() => {
       isinfo.value = false;
-      timer = null;
+      timer1 = null;
     }, 300);
 }
 function goto(path, id) {
@@ -43,51 +50,135 @@ function goto(path, id) {
   store.dispatch("getArtistAlbum", route.query.id);
   router.push({ path, query: { id } });
 }
-function isShow() {
+function isplaylistinfo() {
   playlistinfo.value = !playlistinfo.value;
 }
+function isLyricsPageinfo() {
+  LyricsPageinfo.value = !LyricsPageinfo.value;
+}
+function isplay() {
+  if (store.state.playqueue != null) {
+    getMusicUrl(store.state.playqueue[controls.currentIndex].id);
+    if (controls.musicUrl) {
+      controls.play = !controls.play;
+      if (controls.play) {
+        setTimeout(() => {
+          audio.value.play();
+        }, 1);
+      }
+      audio.value.pause();
+    }
+  }
+}
+async function getMusicUrl(id) {
+  const result = await reqMusicUrl(id);
+  controls.musicUrl = result.data[0].url;
+}
+function playSongs(playqueue) {
+  controls.currentIndex = store.state.playqueue
+    .map((item) => item)
+    .indexOf(playqueue);
+  controls.songName = playqueue.name;
+  controls.singName = playqueue.ar[0].name;
+  picUrl.value.src = playqueue.al.picUrl;
+  controls.end = playqueue.dt;
+  getMusicUrl(playqueue.id);
+}
+function previous() {
+  if (controls.currentIndex === -store.state.playqueue.length)
+    controls.currentIndex = store.state.playlist.length;
+  controls.currentIndex--;
+  getMusicUrl(store.state.playqueue.at(controls.currentIndex).id);
+}
+function next() {
+  if (controls.currentIndex === store.state.playqueue.length - 1)
+    controls.currentIndex = -1;
+  controls.currentIndex++;
+  getMusicUrl(store.state.playqueue.at(controls.currentIndex).id);
+}
+function currentTime() {
+  if (controls.play)
+    if (controls.progress != audio.value.currentTime) {
+      controls.start = audio.value.currentTime;
+      controls.progress = parseInt(
+        ((audio.value.currentTime * 1000) / controls.end) * 100
+      );
+    }
+}
+function changeCurrenTime() {
+  audio.value.currentTime = ((controls.progress / 100) * controls.end) / 1000;
+}
+function volumechange() {
+  audio.value.volume = controls.volume / 100;
+}
+function seeking() {
+  const bf = store.state.playqueue.at(controls.currentIndex);
+  controls.songName = bf.name;
+  controls.id = bf.id;
+  controls.singName = bf.ar[0].name;
+  picUrl.value.src = bf.al.picUrl;
+  controls.end = bf.dt;
+  controls.play = true;
+}
+function seeked() {
+  controls.play = false;
+  if (store.state.playqueue.length === 1) {
+    audio.value.play();
+  }
+  next();
+}
+watch(
+  () => store.state.playqueue,
+  (newv) => {
+    controls.songName = newv[0].name;
+    controls.id = newv[0].id;
+    controls.singName = newv[0].ar[0].name;
+    picUrl.value.src = newv[0].al.picUrl;
+    controls.end = newv[0].dt;
+    getMusicUrl(newv[0].id);
+  },
+  { deep: true }
+);
 </script>
 <template>
   <el-footer>
     <el-row>
-      <el-col :span="2">
+      <el-col :span="5">
         <img
-          src="https://p8.itc.cn/q_70/images03/20221104/e4ca49cface64cd2893d47993826a228.jpeg"
-          alt=""
+          ref="picUrl"
+          src="../../assets/logo.png"
+          @click="isLyricsPageinfo"
         />
-      </el-col>
-      <el-col :span="7">
         <ul>
-          <li>歌曲名字</li>
-          <svg
-            class="icon"
-            aria-hidden="true"
-            v-show="!likes"
-            @click="islikes(item)"
-          >
-            <use xlink:href="#my-icon-aixin"></use>
-          </svg>
-          <svg
-            class="icon"
-            aria-hidden="true"
-            v-show="likes"
-            @click="islikes(item)"
-          >
-            <use xlink:href="#my-icon-aixin1"></use>
-          </svg>
+          <li v-show="controls.name != ''">
+            <span>{{ controls.songName }}</span>
+          </li>
+          <li v-show="controls.name != ''">
+            <span>{{ controls.singName }}</span>
+          </li>
+          <li v-show="controls.musicUrl">
+            <svg
+              class="icon"
+              aria-hidden="true"
+              v-show="!store.getters.islike(controls.id)"
+              @click="islikes(item)"
+            >
+              <use xlink:href="#my-icon-aixin"></use>
+            </svg>
+            <svg
+              class="icon"
+              aria-hidden="true"
+              v-show="store.getters.islike(controls.id)"
+              @click="islikes(item)"
+            >
+              <use xlink:href="#my-icon-aixin1"></use>
+            </svg>
+          </li>
         </ul>
       </el-col>
-      <el-col :span="8">
-        <svg class="icon" aria-hidden="true">
+      <el-col :span="13">
+        <svg class="icon" aria-hidden="true" @click="previous">
           <use xlink:href="#my-icon-diyiyeshouyeshangyishou"></use>
-        </svg>
-        <svg
-          class="icon"
-          aria-hidden="true"
-          @click="isplay"
-          v-show="controls.play"
-        >
-          <use xlink:href="#my-icon-weibiaoti518-copy"></use>
         </svg>
         <svg
           class="icon"
@@ -95,30 +186,71 @@ function isShow() {
           @click="isplay"
           v-show="!controls.play"
         >
+          <use xlink:href="#my-icon-weibiaoti518-copy"></use>
+        </svg>
+        <svg
+          class="icon"
+          aria-hidden="true"
+          @click="isplay"
+          v-show="controls.play"
+        >
           <use xlink:href="#my-icon-zanting"></use>
         </svg>
-        <svg class="icon" aria-hidden="true">
+        <svg class="icon" aria-hidden="true" @click="next">
           <use xlink:href="#my-icon-zuihouyiyemoyexiayishou"></use>
         </svg>
         <el-slider
-          v-model="value"
+          v-model="controls.volume"
           vertical
           height="200px"
           v-show="isinfo"
+          :volue="controls.volume"
           @mouseenter="mouseenter"
           @mouseleave="mouseleave"
+          @input="volumechange"
         />
         <svg
           class="icon"
           aria-hidden="true"
+          v-show="controls.volume != 0"
           @mouseenter="mouseenter"
           @mouseleave="mouseleave"
         >
           <use xlink:href="#my-icon-shengyin"></use>
         </svg>
+        <svg
+          class="icon"
+          aria-hidden="true"
+          v-show="controls.volume === 0"
+          @mouseenter="mouseenter"
+          @mouseleave="mouseleave"
+        >
+          <use xlink:href="#my-icon-shengyinguanbi"></use>
+        </svg>
+        <div class="playitem">
+          <span>{{ store.getters.timeFormat(controls.start) }}</span>
+          <el-slider
+            v-model="controls.progress"
+            :disabled="!controls.play"
+            @change="changeCurrenTime"
+          />
+          <span>{{
+            store.getters.timeFormat(
+              (controls.end - controls.start * 1000) / 1000
+            )
+          }}</span>
+        </div>
+        <audio
+          :src="controls.musicUrl"
+          @timeupdate="currentTime"
+          @play="seeking"
+          @ended="seeked"
+          autoplay
+          ref="audio"
+        ></audio>
       </el-col>
       <el-col :span="6">
-        <svg class="icon" aria-hidden="true" @click="isShow">
+        <svg class="icon" aria-hidden="true" @click="isplaylistinfo">
           <use xlink:href="#my-icon-bofangduilie"></use>
         </svg>
       </el-col>
@@ -129,43 +261,40 @@ function isShow() {
     <el-aside v-show="playlistinfo">
       <div class="header">
         <h2>播放队列</h2>
-        <span>{{ playqueue.length }}首歌曲</span>
+        <span>{{ store.state.playqueue.length }}首歌曲</span>
       </div>
       <el-scrollbar max-height="80vh">
         <div
           class="bigbox"
-          @mouseenter="showhover(item)"
-          @mouseleave="showhover(item)"
-          v-for="playqueue in playqueue"
+          v-for="playqueue in store.state.playqueue"
+          @dblclick="playSongs(playqueue)"
           :key="playqueue"
         >
           <div class="partname">
-            <span>{{ playqueue.al.name }}</span>
+            <span>{{ playqueue.name }}</span>
             <span @click="goto('/SingerDetails', playqueue.ar[0].id)">{{
               playqueue.ar[0].name
             }}</span>
-            <span>{{
-              new Date(playqueue.dt).getMinutes() < 10
-                ? "0" +
-                  new Date(playqueue.dt).getMinutes() +
-                  ":" +
-                  (new Date(playqueue.dt).getSeconds() < 10
-                    ? new Date(playqueue.dt).getSeconds() + "0"
-                    : new Date(playqueue.dt).getSeconds())
-                : new Date(playqueue.dt).getMinutes() +
-                  ":" +
-                  new Date(playqueue.dt).getSeconds()
-            }}</span>
+            <span>{{ store.getters.timeFormat(playqueue.dt / 1000) }}</span>
           </div>
         </div>
       </el-scrollbar>
       <div class="bottom">
-        <svg class="icon" aria-hidden="true" @click="isShow">
+        <svg class="icon" aria-hidden="true" @click="isplaylistinfo">
           <use xlink:href="#my-icon-bofangduilie"></use>
         </svg>
-        <span @click="isShow">收起</span>
+        <span @click="isplaylistinfo">收起</span>
       </div>
     </el-aside>
+  </transition>
+  <!-- 歌词页面 -->
+  <transition name="LyricsPage">
+    <LyricsPage
+      v-show="LyricsPageinfo"
+      :song="store.state.playqueue[controls.currentIndex]"
+      :isLyricsPageinfo="isLyricsPageinfo"
+      :start="controls.start"
+    />
   </transition>
 </template>
 <style lang="less" scoped>
@@ -176,13 +305,26 @@ function isShow() {
 .indicate-leave-active {
   animation: indicate 0.3s linear reverse;
 }
-
+.LyricsPage-enter-active {
+  animation: LyricsPage 0.3s linear;
+}
+.LyricsPage-leave-active {
+  animation: LyricsPage 0.3s linear reverse;
+}
 @keyframes indicate {
   from {
     transform: translateX(100%);
   }
   to {
     transfrom: translateX(0px);
+  }
+}
+@keyframes LyricsPage {
+  from {
+    transform: translateY(112%);
+  }
+  to {
+    transfrom: translateY(0px);
   }
 }
 .el-aside {
@@ -256,25 +398,43 @@ function isShow() {
   }
 }
 .el-footer {
-  height: 12vh;
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  height: 70px;
+  z-index: 4;
   box-shadow: 1px -2px 1px #ccc;
   background-color: #f6f6f6;
-  margin-top: 4px;
   .el-row {
     align-items: center;
-    .el-col-2 {
+    .el-col-5 {
+      display: flex;
+      align-items: center;
+      max-width: 17%;
+      flex-basis: 17%;
+      margin: 4px 0;
+      overflow: hidden;
       img {
-        margin-left: 19px;
+        margin-right: 19px;
         height: 60px;
         width: 60px;
         border-radius: 5px;
+        &:hover {
+          cursor: pointer;
+        }
       }
-    }
-    .el-col-7 {
       ul {
-        margin: 22px 0;
         li {
-          margin-top: 5px;
+          width: 160px;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          &:nth-child(2) {
+            margin-top: 4px;
+            span:hover {
+              cursor: pointer;
+            }
+          }
         }
       }
       .icon {
@@ -285,26 +445,42 @@ function isShow() {
         }
       }
     }
-    .el-col-8 {
-      .el-slider {
-        --el-border-color-light: rgba(204, 204, 204, 0.381);
+    .el-col-13 {
+      text-align: center;
+      .is-vertical {
+        --el-border-color-light: #ced4da;
         --el-slider-height: 8px;
         position: absolute;
-        bottom: 60px;
-        width: 21px !important;
-        height: 212px;
-        margin-left: 4px;
+        bottom: 84px;
+        height: 168px;
+        margin-left: 3px;
         border-radius: 5px;
         background-color: #fff;
-        :deep(.el-slider__bar) {
-          margin-left: -9px;
+        :deep(.el-slider__runway) {
+          margin: 0 8px;
         }
         :deep(.el-slider__button-wrapper) {
+          margin-left: 1px;
           .el-slider__button {
             width: 10px;
             height: 10px;
-            margin-left: -16px;
             transform: scale(1.1) !important;
+          }
+        }
+      }
+      .playitem {
+        display: flex;
+        align-items: center;
+        padding: 0 92px 0 90px;
+        .el-slider {
+          --el-border-color-light: #ced4da;
+          padding: 0 10px;
+          width: 82%;
+          :deep(.el-slider__button-wrapper) {
+            .el-slider__button {
+              width: 10px;
+              height: 10px;
+            }
           }
         }
       }
@@ -316,7 +492,7 @@ function isShow() {
       }
     }
     .el-col-6 {
-      text-align: right;
+      padding-left: 190px;
       .icon {
         font-size: 30px;
         &:hover {

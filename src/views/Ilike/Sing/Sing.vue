@@ -1,10 +1,10 @@
 <script setup>
-import { onBeforeMount, ref } from "vue";
+import { ref } from "vue";
 import { useStore } from "vuex";
 import { ElMessage } from "element-plus";
 import { RECEIVE_PLAYQUEUE } from "@/store/mutations-type.js";
 const store = useStore();
-const props = defineProps(["playlist"]);
+defineProps(["playlist"]);
 const likes = ref(false);
 function dbclic(item) {
   if (store.state.playqueue.some((queue) => queue.id === item.id)) {
@@ -20,12 +20,10 @@ function dbclic(item) {
     store.commit(RECEIVE_PLAYQUEUE, item);
   }
 }
-function islikes() {
+function islikes(item) {
+  console.log(item.id);
   likes.value = !likes.value;
 }
-onBeforeMount(() => {
-  console.log(props.playlist);
-});
 </script>
 <template>
   <el-row class="headline">
@@ -46,22 +44,24 @@ onBeforeMount(() => {
     :key="item"
   >
     <el-col :span="10">
-      <svg
-        class="icon"
-        aria-hidden="true"
-        v-show="!likes"
-        @click.stop="islikes(item)"
-      >
-        <use xlink:href="#my-icon-aixin"></use>
-      </svg>
-      <svg
-        class="icon"
-        aria-hidden="true"
-        v-show="likes"
-        @click.stop="islikes(item)"
-      >
-        <use xlink:href="#my-icon-aixin1"></use>
-      </svg>
+      <span v-show="playlist">
+        <svg
+          class="icon"
+          aria-hidden="true"
+          v-show="!store.getters.islike(item.id)"
+          @click.stop="islikes(item)"
+        >
+          <use xlink:href="#my-icon-aixin"></use>
+        </svg>
+        <svg
+          class="icon"
+          aria-hidden="true"
+          v-show="store.getters.islike(item.id)"
+          @click.stop="islikes(item)"
+        >
+          <use xlink:href="#my-icon-aixin1"></use>
+        </svg>
+      </span>
       <span>{{ item.name }}</span>
     </el-col>
     <el-col :span="6">

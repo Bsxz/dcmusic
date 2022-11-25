@@ -10,6 +10,7 @@ const store = useStore();
 
 onBeforeMount(() => {
   store.dispatch("getAcount");
+  store.dispatch("getUserLikelist", store.state.user.account.id);
 });
 </script>
 <template>

@@ -18,11 +18,6 @@ onBeforeMount(async () => {
   <el-row v-if="store.getters.resource">
     <ReferralList :songlist="store.getters.resource" />
   </el-row>
-
-  <h2>精品歌单</h2>
-  <el-row>
-    <!-- <Playlist :loading="loading" v-for="item in 40" :key="item" /> -->
-  </el-row>
 </template>
 <style lang="less" scoped>
 h1 {

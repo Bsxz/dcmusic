@@ -1,3 +1,5 @@
+import { timeFormat, dateFormat } from "@/utils/filerts.js";
+
 export default {
   artistdetail(state) {
     return state.artistdetail;
@@ -16,5 +18,23 @@ export default {
   },
   playqueue(state) {
     return state.playqueue;
+  },
+  timeFormat() {
+    return function (time) {
+      return timeFormat(time);
+    };
+  },
+  dateFormat() {
+    return function (time) {
+      return dateFormat(time);
+    };
+  },
+  islike(state) {
+    return function (id) {
+      if (state.user.likelist.includes(id)) {
+        return true;
+      }
+      return false;
+    };
   },
 };

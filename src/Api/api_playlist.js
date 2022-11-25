@@ -1,6 +1,8 @@
 import { ajax } from "./request.js";
-
-/* 获取推荐歌单 */
+// 搜索音乐
+export const reqsearchsongs = (keywords, offset = 0) =>
+  ajax("/cloudsearch", { keywords, offset });
+// 获取推荐歌单
 export const reqPersonalized = (limit) =>
   ajax("/personalized", { limit, timestamp: Date.now() });
 // 获取精品歌单
@@ -18,7 +20,7 @@ export const reqCatlist = () =>
 
 // 获取歌单(网友精选)
 export const reqToplist = (cat, limit, before) =>
-  ajax("/top/playlist", { cat, limit, before, timestamp: Date.now() });
+  ajax("/top/playlist", cat, limit, before);
 
 // 获取相关歌单推荐
 export const reqRelatedPlaylist = (id) =>

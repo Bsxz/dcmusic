@@ -1,9 +1,9 @@
 <script setup>
-import { onMounted, onBeforeMount, ref, computed } from "vue";
+import { onMounted, onBeforeMount, ref } from "vue";
 import { useRoute, useRouter } from "vue-router";
 import { useStore } from "vuex";
 
-import Songs from "./Songs/Songs.vue";
+import Songs from "@/components/Songs/Songs.vue";
 import Description from "./Description/Description.vue";
 
 const store = useStore();
@@ -12,12 +12,6 @@ const route = useRoute();
 const loading = ref(true);
 const activeName = ref("one");
 
-const date = computed(() => {
-  const yy = new Date(store.state.album.publishTime).getFullYear();
-  const mm = new Date(store.state.album.publishTime).getMonth() + 1;
-  const dd = new Date(store.state.album.publishTime).getDate();
-  return yy < 10 ? "0" + yy : yy + "-" + mm + "-" + dd;
-});
 function gotoSinger(path, id) {
   router.push({ path, query: { id } });
 }
@@ -37,12 +31,12 @@ onMounted(() => {
         <el-skeleton-item variant="image" />
       </template>
       <template #default>
-        <el-card :body-style="{ width: '180px' }">
+        <el-card :body-style="{ width: '180px' }" v-if="store.state.album">
           <img :src="store.state.album.blurPicUrl" class="image" />
         </el-card>
       </template>
     </el-skeleton>
-    <div class="hright">
+    <div class="hright" v-if="store.state.album.name">
       <h2>{{ store.state.album.name }}</h2>
       <p class="songer">
         歌手：<span
@@ -50,7 +44,9 @@ onMounted(() => {
           >{{ store.state.album.artist.name }}</span
         >
       </p>
-      <p>专辑时间：{{ date }}</p>
+      <p>
+        专辑时间：{{ store.getters.dateFormat(store.state.album.publishTime) }}
+      </p>
     </div>
   </div>
   <el-tabs v-model="activeName" class="demo-tabs">
@@ -58,7 +54,10 @@ onMounted(() => {
       <Songs v-if="store.state.songs" :songlists="store.state.songs" />
     </el-tab-pane>
     <el-tab-pane label="专辑详情" name="tow">
-      <Description :description="store.state.album.description" />
+      <Description
+        v-if="store.state.description"
+        :description="store.state.album.description"
+      />
     </el-tab-pane>
   </el-tabs>
 </template>

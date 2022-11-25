@@ -14,7 +14,7 @@ function getTaglist(cat) {
 }
 onBeforeMount(() => {
   store.dispatch("getTags");
-  store.dispatch("getToplist");
+  store.dispatch("getToplist", tag.value);
 });
 const isfocus = computed(() => {
   return tag.value;

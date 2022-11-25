@@ -8,8 +8,7 @@ const store = useStore();
 const router = useRouter();
 defineProps(["songlists"]);
 const likes = ref(false);
-function dbclic(item) {
-  console.log(item);
+function dbclic(item, songlists) {
   if (store.state.playqueue.some((queue) => queue.id === item.id)) {
     ElMessage({
       message: "播放队列中已有此歌曲",
@@ -20,7 +19,7 @@ function dbclic(item) {
       message: "添加成功",
       type: "success",
     });
-    store.commit(RECEIVE_PLAYQUEUE, item);
+    store.commit(RECEIVE_PLAYQUEUE, songlists);
   }
 }
 function islikes(item) {
@@ -53,7 +52,7 @@ function gotoSinger(path, id) {
     class="playlist"
     v-for="(item, index) in songlists"
     :key="item"
-    @dblclick="dbclic(item)"
+    @dblclick="dbclic(item, songlists)"
   >
     <el-col :span="1">
       <span>{{ index + 1 < 10 ? "0" + (index + 1) : index + 1 }}</span>
@@ -62,7 +61,7 @@ function gotoSinger(path, id) {
       <svg
         class="icon"
         aria-hidden="true"
-        v-show="!likes"
+        v-show="!store.getters.islike(item.id)"
         @click.stop="islikes(item)"
       >
         <use xlink:href="#my-icon-aixin"></use>
@@ -70,7 +69,7 @@ function gotoSinger(path, id) {
       <svg
         class="icon"
         aria-hidden="true"
-        v-show="likes"
+        v-show="store.getters.islike(item.id)"
         @click.stop="islikes(item)"
       >
         <use xlink:href="#my-icon-aixin1"></use>
@@ -88,16 +87,7 @@ function gotoSinger(path, id) {
       }}</span>
     </el-col>
     <el-col :span="2">
-      <span>{{
-        new Date(item.dt).getMinutes() < 10
-          ? "0" +
-            new Date(item.dt).getMinutes() +
-            ":" +
-            new Date(item.dt).getSeconds()
-          : new Date(item.dt).getMinutes() +
-            ":" +
-            new Date(item.dt).getSeconds()
-      }}</span>
+      <span>{{ store.getters.timeFormat(item.dt / 1000) }}</span>
     </el-col>
   </el-row>
 </template>

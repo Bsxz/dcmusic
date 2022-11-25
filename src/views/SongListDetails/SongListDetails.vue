@@ -1,9 +1,9 @@
 <script setup>
-import { onMounted, onBeforeMount, ref, computed } from "vue";
+import { onMounted, ref, computed, watch, onBeforeMount } from "vue";
 import { useRoute } from "vue-router";
 import { useStore } from "vuex";
 
-import Songs from "./Songs/Songs.vue";
+import Songs from "@/components/Songs/Songs.vue";
 
 const store = useStore();
 const route = useRoute();
@@ -20,10 +20,17 @@ onBeforeMount(() => {
   store.dispatch("getDetail", route.query.id);
   store.dispatch("getTrackAll", route.query.id);
 });
-
 onMounted(() => {
   loading.value = !loading.value;
 });
+
+watch(
+  () => route.query.id,
+  () => {
+    store.dispatch("getDetail", route.query.id);
+    store.dispatch("getTrackAll", route.query.id);
+  }
+);
 </script>
 <template>
   <div class="header">

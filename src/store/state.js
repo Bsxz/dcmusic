@@ -9,6 +9,7 @@ export default {
   artistalbum: [], // 歌手专辑列表
   album: [], // 歌手专辑歌单详情
   songs: [], // 歌手专辑歌单列表
+  searchsongs: [], // 搜索的歌单列表
   boutiqueSongList: [],
   banner: [], // 轮播图
   highquality: [],
@@ -36,6 +37,7 @@ export default {
     isLogin: [], // 登入状态
     detail: [], // 用户歌单详情
     account: [], // 用户详情
+    likelist: [], // 喜欢列表
     subcount: {
       likes: [],
       create: [],

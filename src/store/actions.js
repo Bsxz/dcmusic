@@ -21,7 +21,9 @@ import {
   reqAcount,
   reqUserSubcount,
 } from "@/Api/api_user.js";
-import { reqAlbum } from "../Api/api_album";
+import { reqAlbum } from "@/Api/api_album.js";
+import { reqMusicUrl } from "@/Api/api_music.js";
+import { reqlike, reqUserLikelist } from "@/Api/api_like.js";
 
 import {
   RECEIVE_DOLOGIN,
@@ -30,6 +32,7 @@ import {
   RECEIVE_USERACCOUNT,
   RECEIVE_USERDETAIL,
   RECEIVE_USERSUBCOUNT,
+  RECEIVE_USERLIKELIST,
   RECEIVE_BANNER,
   RECEIVE_RESOURCE,
   RECEIVE_SONGS,
@@ -76,6 +79,14 @@ export default {
   async getUserDetail({ commit }, id) {
     const result = await reqUserDetail(id);
     commit(RECEIVE_USERDETAIL, { detail: result });
+  },
+  // 获取用户信息歌单收藏
+  async getUserLikelist({ commit }, id) {
+    const result = await reqUserLikelist(
+      id,
+      window.localStorage.getItem("cookies")
+    );
+    commit(RECEIVE_USERLIKELIST, { likelist: result.ids });
   },
   // 获取用户信息歌单收藏
   async getUserSubcount({ commit }, id) {
@@ -160,5 +171,9 @@ export default {
     const result = await reqAlbum(id);
     console.log(result);
     commit(RECEIVE_ALBUM, { result: result });
+  },
+  async getMusicUrl({ commit }, uid) {
+    const result = await reqMusicUrl(uid);
+    console.log(result);
   },
 };

@@ -2,6 +2,8 @@
 const Home = () => import("@/views/Home/Home.vue");
 // 推荐组件
 const referral = () => import("@/views/Referral/Referral.vue");
+// 搜索组件
+const search = () => import("@/views/Search/Search.vue");
 // 音乐中心组件
 const musiccore = () => import("@/views/MusicCore/MusicCore.vue");
 const featur = () => import("@/views/MusicCore/Featur/Featur.vue");
@@ -40,6 +42,11 @@ const routes = [
           keepAlive: true,
         },
         component: referral,
+      },
+      {
+        path: "/search",
+        name: "search",
+        component: search,
       },
       {
         path: "/musiccore",
