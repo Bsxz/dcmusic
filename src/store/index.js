@@ -1,6 +1,6 @@
 import { createStore } from "vuex";
 // import createPersistedState from "vuex-persistedstate";
-import state from "./State";
+import state from "./state";
 import mutations from "./mutations";
 import actions from "./actions";
 import getters from "./getters";
