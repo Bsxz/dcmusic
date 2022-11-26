@@ -42,7 +42,7 @@ export default {
       likes: [],
       create: [],
       collector: [],
-    }, // 用户歌单收藏
+    },
   },
   playqueue: [],
   PlaylistSelect: [],

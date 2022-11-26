@@ -27,7 +27,7 @@ function removePending(config) {
 }
 function myAxios(axiosConfig) {
   const service = axios.create({
-    baseURL: "http://dobudo.xyz:8080",
+    baseURL: "https://dobudo.xyz:8080",
     timeout: 10000,
   });
 

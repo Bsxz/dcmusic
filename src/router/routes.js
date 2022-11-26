@@ -22,7 +22,8 @@ const albumlistdetails = () =>
   import("@/views/SongListDetails/AlbumListDetails.vue");
 // 歌手详情组件
 const singerdetails = () => import("@/views/SingerDetails/SingerDetails.vue");
-
+// 404组件
+const notfound = () => import("@/views/NotFound/NotFound.vue");
 const routes = [
   {
     path: "",
@@ -129,6 +130,20 @@ const routes = [
         component: singerdetails,
       },
     ],
+  },
+  {
+    path: "/notfound",
+    name: "notfound",
+    meta: {
+      title: "not found",
+      isLogin: false,
+    },
+    component: notfound,
+  },
+  {
+    path: "/:catchAll(.*)*",
+    redirect: "/notfound",
+    hidden: true,
   },
 ];
 

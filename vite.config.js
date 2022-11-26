@@ -5,7 +5,7 @@ import Components from "unplugin-vue-components/vite";
 import AutoImport from "unplugin-auto-import/vite";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 export default defineConfig({
-  base: "./",
+  base: "/",
   plugins: [
     vue(),
     AutoImport({
@@ -18,13 +18,6 @@ export default defineConfig({
   server: {
     cors: true,
     open: true,
-    proxy: {
-      "/api": {
-        target: "http://dobudo.xyz:8080",
-        changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api1/, ""),
-      },
-    },
   },
   resolve: {
     alias: {
