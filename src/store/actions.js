@@ -48,19 +48,21 @@ import {
   RECEIVE_ARTISTALBUM,
   RECEIVE_ALBUM,
 } from "./mutations-type";
+import Cookie from "js-cookie";
 
 export default {
   // 用户登入
   async doLogin({ commit, dispatch }, { phone, md5_password }) {
     const result = await reqLogin({ phone, md5_password });
     if (result.code === 200) {
-      window.localStorage.setItem("cookies", result.cookie);
+      Cookie.set("cookies", result.cookie, 7);
       dispatch("getAcount");
       commit(RECEIVE_DOLOGIN, { result: result });
     }
   },
   async logingout({ commit }) {
     await logingout();
+    Cookie.remove("cookies");
     commit(RECEIVE_LOGINOUT);
   },
   // 获取用户登入状态
@@ -70,8 +72,7 @@ export default {
   },
   // 获取账号信息
   async getAcount({ commit, dispatch }) {
-    const cookie = window.localStorage.getItem("cookies");
-    const result = await reqAcount(cookie);
+    const result = await reqAcount(Cookie.get("cookies"));
     dispatch("getUserSubcount", result.account.id);
     commit(RECEIVE_USERACCOUNT, { accountinfo: result });
   },
@@ -82,10 +83,7 @@ export default {
   },
   // 获取用户信息歌单收藏
   async getUserLikelist({ commit }, id) {
-    const result = await reqUserLikelist(
-      id,
-      window.localStorage.getItem("cookies")
-    );
+    const result = await reqUserLikelist(id, Cookie.get("cookies"));
     commit(RECEIVE_USERLIKELIST, { likelist: result.ids });
   },
   // 获取用户信息歌单收藏
@@ -95,13 +93,11 @@ export default {
   },
   // 每日推荐歌单
   async getResource({ commit }) {
-    const cookie = window.localStorage.getItem("cookies");
-    const result = await reqResource(cookie);
+    const result = await reqResource(Cookie.get("cookies"));
     commit(RECEIVE_RESOURCE, { resource: result.recommend });
   },
   async getSongs({ commit }) {
-    const cookie = window.localStorage.getItem("cookies");
-    const result = await reqSongs(cookie);
+    const result = await reqSongs(Cookie.get("cookies"));
     commit(RECEIVE_SONGS, { data: result.data });
   },
   // 获取精品歌单
@@ -169,11 +165,9 @@ export default {
   // 歌手专辑详情
   async getAlbum({ commit }, id) {
     const result = await reqAlbum(id);
-    console.log(result);
     commit(RECEIVE_ALBUM, { result: result });
   },
   async getMusicUrl({ commit }, uid) {
-    const result = await reqMusicUrl(uid);
-    console.log(result);
+    await reqMusicUrl(uid);
   },
 };

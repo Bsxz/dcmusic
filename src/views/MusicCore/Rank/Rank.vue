@@ -1,18 +1,13 @@
 <script setup>
 import Billboard from "@/views/MusicCore/Rank/Billboard/Billboard.vue";
 import RankList from "@/views/MusicCore/Rank/RankList/RankList.vue";
-import { onBeforeMount, onMounted } from "vue";
+import { onBeforeMount } from "vue";
 import { useStore } from "vuex";
 
 const store = useStore();
 
 onBeforeMount(() => {
   store.dispatch("getToplistDetail");
-});
-
-onMounted(() => {
-  console.log(store.state.toplistdetail.gflist);
-  console.log(store.state.toplistdetail.qulist);
 });
 </script>
 <template>

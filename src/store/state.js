@@ -1,4 +1,5 @@
 export default {
+  LoginStatus: false,
   dailySongs: [], //用户每日推荐歌曲
   recommendReasons: [],
   hotlists: [], // 每日三十首

@@ -11,7 +11,6 @@ function goto(id, path) {
 onMounted(() => {
   if (props.gflists != []) {
     loading.value = !loading.value;
-    console.log(loading.value);
   }
 });
 </script>

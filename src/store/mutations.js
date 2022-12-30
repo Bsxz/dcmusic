@@ -35,7 +35,9 @@ export default {
     state.user.profile = result.profile;
   },
   [RECEIVE_LOGINOUT](state) {
-    state.user = {};
+    state.user.account = [];
+    state.user.profile = {};
+    state.LoginStatus = false;
   },
   [RECEIVE_LOGINSTATUS](state, { isLogin }) {
     state.user.isLogin = isLogin;
@@ -44,6 +46,7 @@ export default {
     state.user.detail = detail;
   },
   [RECEIVE_USERACCOUNT](state, { accountinfo }) {
+    state.LoginStatus = true;
     state.user.profile = accountinfo.profile;
     state.user.account = accountinfo.account;
   },
@@ -133,6 +136,5 @@ export default {
   },
   [RECEIVE_SEARCHLIST](state, { songs }) {
     state.searchsongs = songs;
-    console.log(state.searchsongs);
   },
 };

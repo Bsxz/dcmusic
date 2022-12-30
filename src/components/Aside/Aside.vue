@@ -18,6 +18,7 @@ function addSongList() {
           <el-menu-item-group title="在线音乐">
             <el-menu-item
               index="/referral"
+              :disabled="!store.state.LoginStatus"
               :class="{ active: RegExp(/referral/).test(route.path) }"
               >推荐
             </el-menu-item>
@@ -30,16 +31,12 @@ function addSongList() {
           <el-menu-item-group title="我的音乐">
             <el-menu-item
               index="/ilike"
+              :disabled="!store.state.LoginStatus"
               :class="{ active: RegExp(/ilike/).test(route.path) }"
               >我喜欢
             </el-menu-item>
-            <el-menu-item
-              index="/collection"
-              :class="{ active: RegExp(/collection/).test(route.path) }"
-              >收藏
-            </el-menu-item>
           </el-menu-item-group>
-          <el-sub-menu index="1">
+          <el-sub-menu index="1" :disabled="!store.state.LoginStatus">
             <template #title>
               <span>创建的歌单</span>
               <el-icon class="plus" @click.stop="addSongList()">
@@ -56,7 +53,11 @@ function addSongList() {
               >
             </el-menu-item-group>
           </el-sub-menu>
-          <el-sub-menu index="2" class="collector">
+          <el-sub-menu
+            index="2"
+            class="collector"
+            :disabled="!store.state.LoginStatus"
+          >
             <template #title>
               <span>收藏的歌单</span>
               <el-icon class="plus">

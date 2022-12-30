@@ -14,7 +14,6 @@ async function currentchange(num) {
 }
 
 onBeforeMount(async () => {
-  console.log(route.query.keywords);
   const result = await reqsearchsongs(route.query.keywords);
   store.commit(RECEIVE_SEARCHLIST, { songs: result.result.songs });
 });

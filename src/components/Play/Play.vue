@@ -398,8 +398,6 @@ watch(
   }
 }
 .el-footer {
-  position: fixed;
-  bottom: 0;
   width: 100%;
   height: 70px;
   z-index: 4;

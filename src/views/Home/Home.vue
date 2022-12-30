@@ -5,12 +5,15 @@ import Core from "@/components/Core/Core.vue";
 import Play from "@/components/Play/Play.vue";
 import { onBeforeMount } from "vue";
 import { useStore } from "vuex";
-
+import Cookie from "js-cookie";
 const store = useStore();
 
 onBeforeMount(() => {
-  store.dispatch("getAcount");
-  store.dispatch("getUserLikelist", store.state.user.account.id);
+  // console.log("1510208898");
+  if (Cookie.get("cookies")) {
+    store.dispatch("getAcount");
+    store.dispatch("getUserLikelist", store.state.user.account.id);
+  }
 });
 </script>
 <template>

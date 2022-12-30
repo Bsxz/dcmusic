@@ -21,7 +21,6 @@ function dbclic(item) {
   }
 }
 function islikes(item) {
-  console.log(item.id);
   likes.value = !likes.value;
 }
 </script>

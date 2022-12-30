@@ -23,7 +23,7 @@ function dbclic(item, songlists) {
   }
 }
 function islikes(item) {
-  console.log(item);
+  // console.log(item);
 }
 function gotoAblum(path, id) {
   router.push({ path, query: { id } });

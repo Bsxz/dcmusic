@@ -3,6 +3,8 @@ import { computed, reactive, ref } from "vue";
 import { useRouter } from "vue-router";
 import Login from "@/components/Login/Login.vue";
 import { useStore } from "vuex";
+import { ElMessage, ElMessageBox } from "element-plus";
+
 const router = useRouter();
 const store = useStore();
 const infoLogin = ref(false);
@@ -21,6 +23,7 @@ function forward() {
   router.go(1);
 }
 async function search() {
+  if (data.input === "") return;
   router.push({ path: "/search", query: { keywords: data.input } });
 }
 function showinfosuffix() {
@@ -36,10 +39,15 @@ function showinfoprefix() {
   data.suffix = false;
 }
 function login() {
-  if (!profile.value) {
+  console.log(store.state.LoginStatus);
+  if (!store.state.LoginStatus) {
     infoLogin.value = true;
   } else {
-    return alert(`已经登入`);
+    ElMessage({
+      message: "已经登入",
+      type: "warning",
+      duration: 1000,
+    });
   }
 }
 
@@ -48,8 +56,25 @@ const isLogin = (v) => {
   infoLogin.value = v;
 };
 function outLogin() {
-  store.dispatch("logingout");
-  infoMenu.value = false;
+  ElMessageBox.confirm("确定要退出吗?", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  })
+    .then(() => {
+      ElMessage({
+        type: "success",
+        message: "退出登入成功",
+      });
+      store.dispatch("logingout");
+      infoMenu.value = false;
+    })
+    .catch(() => {
+      ElMessage({
+        type: "info",
+        message: "取消退出登入",
+      });
+    });
 }
 const profile = computed(() => {
   return store.getters.profile;
@@ -67,13 +92,20 @@ const profile = computed(() => {
         /></el-icon>
         <el-input
           v-model="data.input"
-          :prefix-icon="data.prefix ? 'Search' : ''"
           @focus="showinfosuffix()"
           @blur="showinfoprefix()"
           @keydown.enter="search"
           :placeholder="data.placeholder"
-          :suffix-icon="data.suffix ? 'Search' : ''"
-        />
+        >
+          <template #prefix>
+            <el-icon v-if="data.prefix ? 'Search' : ''"><Search /></el-icon>
+          </template>
+          <template #suffix>
+            <el-icon v-if="data.suffix ? 'Search' : ''" @click="search"
+              ><Search @click="search"
+            /></el-icon>
+          </template>
+        </el-input>
       </el-col>
       <el-col :span="8">
         <el-avatar
@@ -83,7 +115,7 @@ const profile = computed(() => {
           :src="profile.avatarUrl"
         ></el-avatar>
         <el-avatar v-else class="avatar" @click="login"></el-avatar>
-        <template v-if="profile">
+        <template v-if="store.state.LoginStatus">
           <el-dropdown trigger="click">
             <span class="el-dropdown-link">
               {{ profile.nickname
