@@ -5,7 +5,6 @@ import Components from "unplugin-vue-components/vite";
 import AutoImport from "unplugin-auto-import/vite";
 import { ElementPlusResolver } from "unplugin-vue-components/resolvers";
 export default defineConfig({
-  base: "/",
   plugins: [
     vue(),
     AutoImport({
@@ -15,9 +14,8 @@ export default defineConfig({
       resolvers: [ElementPlusResolver()],
     }),
   ],
-  server: {
-    cors: true,
-    open: true,
+  server:{
+    open:true
   },
   resolve: {
     alias: {
