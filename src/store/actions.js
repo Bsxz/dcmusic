@@ -55,14 +55,14 @@ export default {
   async doLogin({ commit, dispatch }, { phone, md5_password }) {
     const result = await reqLogin({ phone, md5_password });
     if (result.code === 200) {
-      Cookie.set("cookies", result.cookie, 7);
+      localStorage.setItem("cookies", result.coookie);
       dispatch("getAcount");
       commit(RECEIVE_DOLOGIN, { result: result });
     }
   },
   async logingout({ commit }) {
     await logingout();
-    Cookie.remove("cookies");
+    localStorage.removeItem("cookies");
     commit(RECEIVE_LOGINOUT);
   },
   // 获取用户登入状态
@@ -72,7 +72,7 @@ export default {
   },
   // 获取账号信息
   async getAcount({ commit, dispatch }) {
-    const result = await reqAcount(Cookie.get("cookies"));
+    const result = await reqAcount(localStorage.getItem("cookies"));
     dispatch("getUserSubcount", result.account.id);
     commit(RECEIVE_USERACCOUNT, { accountinfo: result });
   },
@@ -83,7 +83,7 @@ export default {
   },
   // 获取用户信息歌单收藏
   async getUserLikelist({ commit }, id) {
-    const result = await reqUserLikelist(id, Cookie.get("cookies"));
+    const result = await reqUserLikelist(id, localStorage.getItem("cookies"));
     commit(RECEIVE_USERLIKELIST, { likelist: result.ids });
   },
   // 获取用户信息歌单收藏
@@ -93,11 +93,11 @@ export default {
   },
   // 每日推荐歌单
   async getResource({ commit }) {
-    const result = await reqResource(Cookie.get("cookies"));
+    const result = await reqResource(localStorage.getItem("cookies"));
     commit(RECEIVE_RESOURCE, { resource: result.recommend });
   },
   async getSongs({ commit }) {
-    const result = await reqSongs(Cookie.get("cookies"));
+    const result = await reqSongs(localStorage.getItem("cookies"));
     commit(RECEIVE_SONGS, { data: result.data });
   },
   // 获取精品歌单

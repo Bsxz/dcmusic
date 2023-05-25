@@ -14,8 +14,9 @@ export default defineConfig({
       resolvers: [ElementPlusResolver()],
     }),
   ],
-  server:{
-    open:true
+  server: {
+    port: "4142",
+    open: true,
   },
   resolve: {
     alias: {

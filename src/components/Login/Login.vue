@@ -3,10 +3,8 @@ import { reactive, ref } from "vue";
 import { useStore } from "vuex";
 import md5 from "md5";
 import { getQrKey, createQr, checkQr } from "@/Api/api_user.js";
-import Cookie from "js-cookie";
-
+import Cookies from "js-cookie";
 const store = useStore();
-
 const emit = defineEmits(["isLogin"]);
 const user = reactive({
   phone: "",
@@ -100,7 +98,7 @@ async function taggle() {
         }
         if (result.code === 803) {
           clearInterval(timer);
-          Cookie.set("cookies", result.cookie, 7);
+          localStorage.setItem("name", result.cookie);
           store.dispatch("getAcount");
           emit("isLogin", false);
         }
