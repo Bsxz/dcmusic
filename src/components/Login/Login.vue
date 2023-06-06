@@ -1,9 +1,8 @@
 <script setup>
-import { reactive, ref } from "vue";
+import { onMounted, reactive, ref } from "vue";
 import { useStore } from "vuex";
 import md5 from "md5";
 import { getQrKey, createQr, checkQr } from "@/Api/api_user.js";
-import Cookies from "js-cookie";
 const store = useStore();
 const emit = defineEmits(["isLogin"]);
 const user = reactive({
@@ -13,10 +12,10 @@ const user = reactive({
   uid: 1510208898,
 });
 const unikeyUrl = ref(null);
-const isQrShow = ref(false);
-const isCellphoneShow = ref(true);
-const ismask = ref(true);
+const isQrShow = ref(true);
+const isCellphoneShow = ref(false);
 const isQrmask = ref(false);
+const ismask = ref(true);
 const isrusult = ref(false);
 const formRef = ref();
 let timer = null;
@@ -61,7 +60,7 @@ function submitFrom(formEl) {
       const md5password = md5(user.password);
       user.md5_password = md5password;
       store.dispatch("doLogin", user);
-      if (store.state.user.profile != []) {
+      if (store.state.user.profile.length !== 0) {
         emit("isLogin", false);
       }
     } else {
@@ -71,15 +70,7 @@ function submitFrom(formEl) {
   });
 }
 
-async function taggle() {
-  if (isCellphoneShow.value) {
-    isCellphoneShow.value = false;
-    isQrShow.value = true;
-  } else {
-    isCellphoneShow.value = true;
-    isQrShow.value = false;
-  }
-  if (timer) clearInterval(timer);
+async function getQr() {
   if (isQrShow.value) {
     const { data } = await getQrKey();
     if (data.code === 200) {
@@ -98,7 +89,7 @@ async function taggle() {
         }
         if (result.code === 803) {
           clearInterval(timer);
-          localStorage.setItem("name", result.cookie);
+          localStorage.setItem("cookies", result.cookie);
           store.dispatch("getAcount");
           emit("isLogin", false);
         }
@@ -107,6 +98,21 @@ async function taggle() {
     }
   }
 }
+
+function toggle() {
+  if (timer) clearInterval(timer);
+  if (isCellphoneShow.value) {
+    isCellphoneShow.value = false;
+    isQrShow.value = true;
+  } else {
+    isCellphoneShow.value = true;
+    isQrShow.value = false;
+  }
+}
+
+onMounted(() => {
+  getQr();
+});
 </script>
 
 <template>
@@ -135,7 +141,7 @@ async function taggle() {
         ></el-input>
       </el-form-item>
       <el-form-item class="qr">
-        <span class="taggle" @click="taggle">扫码登入</span>
+        <span class="taggle" @click="toggle">扫码登入</span>
       </el-form-item>
       <el-form-item>
         <el-button type="primary" @click="submitFrom(formRef)">登入</el-button>
@@ -150,7 +156,7 @@ async function taggle() {
           <el-button type="success">刷新</el-button>
         </div>
       </el-form-item>
-      <el-form-item class="taggle" @click="taggle">账号密码登入</el-form-item>
+      <el-form-item class="taggle" @click="toggle">账号密码登入</el-form-item>
     </el-form>
     <el-form v-show="isrusult" class="confirm">
       <el-form-item> 扫码成功 </el-form-item>

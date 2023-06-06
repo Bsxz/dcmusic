@@ -48,7 +48,6 @@ import {
   RECEIVE_ARTISTALBUM,
   RECEIVE_ALBUM,
 } from "./mutations-type";
-import Cookie from "js-cookie";
 
 export default {
   // 用户登入

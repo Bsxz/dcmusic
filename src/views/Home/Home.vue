@@ -9,9 +9,7 @@ const store = useStore();
 
 onBeforeMount(() => {
   // console.log("1510208898");
-  console.log(localStorage.getItem("cookies"));
   if (localStorage.getItem("cookies")) {
-    console.log(1);
     store.dispatch("getAcount");
     store.dispatch("getUserLikelist", store.state.user.account.id);
   }

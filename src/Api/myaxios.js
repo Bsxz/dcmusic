@@ -31,7 +31,7 @@ function removePending(config) {
 
 function myAxios(axiosConfig) {
   const service = axios.create({
-    baseURL: "https://124.222.242.152/api",
+    baseURL: "https://baiyecn.cn/api",
     timeout: 10000,
   });
 

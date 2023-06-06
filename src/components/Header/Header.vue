@@ -39,7 +39,6 @@ function showinfoprefix() {
   data.suffix = false;
 }
 function login() {
-  console.log(store.state.LoginStatus);
   if (!store.state.LoginStatus) {
     infoLogin.value = true;
   } else {
